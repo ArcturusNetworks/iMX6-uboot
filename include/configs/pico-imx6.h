@@ -106,6 +106,87 @@
 #endif
 
 #define CONFIG_ENV_VARS_UBOOT_RUNTIME_CONFIG
+#if 1
+#define CONFIG_EXTRA_ENV_SETTINGS \
+	"SRK0=0x00000000\0" \
+	"SRK1=0x00000000\0" \
+	"SRK2=0x00000000\0" \
+	"SRK3=0x00000000\0" \
+	"SRK4=0x00000000\0" \
+	"SRK5=0x00000000\0" \
+	"SRK6=0x00000000\0" \
+	"SRK7=0x00000000\0" \
+	"fuse_program=fuse prog 3 0 $SRK0; " \
+                     "fuse prog 3 1 $SRK1; " \
+                     "fuse prog 3 2 $SRK2; " \
+                     "fuse prog 3 3 $SRK3; " \
+                     "fuse prog 3 4 $SRK4; " \
+                     "fuse prog 3 5 $SRK5; " \
+                     "fuse prog 3 6 $SRK6; " \
+                     "fuse prog 3 7 $SRK7\0" \
+	"fuse_secure=fuse prog 0 0 0x4000; " \
+                    "fuse prog 0 6 0x8; " \
+                    "fuse prog 0 6 0x100000; " \
+                    "fuse prog 0 6 0xC00000; " \
+                    "fuse prog 0 6 0x8000000; " \
+                    "fuse prog 0 0 0xC\0" \
+	"fuse_lock=fuse prog 0 6 0x2\0" \
+	"program_mac_low=fuse prog 4 2 0x0\0" \
+	"program_mac_high=fuse prog 4 3 0x0\0" \
+	"fdtfile=undefined\0" \
+	"fdt_high=0xffffffff\0" \
+	"fdt_addr=0x18000000\0" \
+	"console=ttymxc0,"__stringify(CONFIG_BAUDRATE)"\0" \
+	"splashpos=m,m\0" \
+	"ip_dyn=no\0" \
+	"fdtfile=undefined\0" \
+	"fdt_high=0xffffffff\0" \
+	"fdt_addr=0x18000000\0" \
+	"fdt_addr_r=0x18000000\0" \
+	"ramdisk_addr_r=0x18000000\0" \
+	"kernel_addr_r="__stringify(CONFIG_LOADADDR)"\0" \
+	"pxefile_addr_r="__stringify(CONFIG_LOADADDR)"\0" \
+	"scriptaddr="__stringify(CONFIG_LOADADDR)"\0" \
+	"initrd_high=0xffffffff\0" \
+	"initrd_addr==0x18000000\0" \
+	"bootenv=uEnv.txt\0" \
+	"boot_fdt=try\0" \
+	"rescuefile=tnrescue.itb\0" \
+	"fit_addr=0x21100000\0" \
+	"mmcroot=/dev/mmcblk0p2 rw\0" \
+	"mmcargs=setenv bootargs console=${console} " \
+		"root=${mmcroot}\0" \
+	"loadbootscript=" \
+		"fatload mmc ${mmcdev}:${mmcpart} ${loadaddr} ${script};\0" \
+	"bootscript=echo Running bootscript from mmc ...; " \
+		"source\0" \
+	"loadimage=fatload mmc ${mmcdev}:${mmcpart} ${loadaddr} ${image}\0" \
+	"loadfdt=fatload mmc ${mmcdev}:${mmcpart} ${fdt_addr} ${fdt_file}\0" \
+	"mmcboot=echo Booting from mmc ...; " \
+		"run mmcargs; " \
+		"if test ${boot_fdt} = yes || test ${boot_fdt} = try; then " \
+			"if run loadfdt; then " \
+				"bootz ${loadaddr} - ${fdt_addr}; " \
+			"else " \
+				"if test ${boot_fdt} = try; then " \
+					"bootz; " \
+				"else " \
+					"echo WARN: Cannot load the DT; " \
+				"fi; " \
+			"fi; " \
+		"else " \
+			"bootz; " \
+		"fi;\0" \
+	BOOTENV
+
+#undef CONFIG_BOOTCOMMAND
+#define CONFIG_BOOTCOMMAND \
+	   "mmc dev ${mmcdev}; if mmc rescan; then " \
+		   "if run loadimage; then " \
+			   "run mmcboot; " \
+		   "fi; " \
+	   "fi"
+#else
 #define CONFIG_EXTRA_ENV_SETTINGS \
 	"console=ttymxc0,"__stringify(CONFIG_BAUDRATE)"\0" \
 	"splashpos=m,m\0" \
@@ -124,6 +205,8 @@
 	"rescuefile=tnrescue.itb\0" \
 	"fit_addr=0x21100000\0" \
 	BOOTENV
+
+#endif
 
 #define BOOT_TARGET_DEVICES(func) \
 	func(MMC, mmc, 0) \

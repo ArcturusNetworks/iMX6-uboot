@@ -151,6 +151,8 @@
 	"initrd_addr==0x18000000\0" \
 	"bootenv=uEnv.txt\0" \
 	"boot_fdt=try\0" \
+	"image=zImage\0" \
+	"fdt_file=imx6dl-pico-dwarf.dtb\0" \
 	"rescuefile=tnrescue.itb\0" \
 	"fit_addr=0x21100000\0" \
 	"mmcroot=/dev/mmcblk0p2 rw\0" \
